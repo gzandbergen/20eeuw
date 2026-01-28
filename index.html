@@ -1,1 +1,637 @@
-Hello wrâld!
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Shownotes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-blue: #4a90e2;
+            --accent-orange: #CC785C;
+            --background: #e8eaf6;
+            --card-bg: #f8f9fa;
+            --text-dark: #333;
+            --text-light: #666;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: var(--background);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid var(--accent-orange);
+        }
+        
+        .content-wrapper {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+        }
+        
+        .sidebar {
+            min-width: 200px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .main-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .links-section {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            border-top: 3px solid var(--accent-orange);
+        }
+        
+        .filter-section {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            border-top: 3px solid var(--primary-blue);
+        }
+        
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+        
+        .links-list {
+            list-style: none;
+        }
+        
+        .link-item {
+            margin-bottom: 8px;
+        }
+        
+        .link-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .external-link {
+            display: block;
+            padding: 10px 12px;
+            color: var(--primary-blue);
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.2s;
+            font-size: 14px;
+            background: white;
+            font-weight: 500;
+        }
+        
+        .external-link:hover {
+            background: var(--accent-orange);
+            color: white;
+            transform: translateX(2px);
+        }
+        
+        .filter-toggle {
+            display: none;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 20px;
+            width: 100%;
+            text-align: left;
+            position: relative;
+        }
+        
+        .hamburger-menu {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: var(--accent-orange);
+            border: none;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(204, 120, 92, 0.4);
+            transition: all 0.3s;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+        }
+        
+        .hamburger-menu:hover {
+            background: #b86b4f;
+            transform: scale(1.08);
+            box-shadow: 0 6px 16px rgba(204, 120, 92, 0.5);
+        }
+        
+        .hamburger-menu i {
+            transition: transform 0.3s;
+        }
+        
+        .hamburger-menu.active i {
+            transform: rotate(90deg);
+        }
+        
+        .mobile-overlay {
+            display: none;
+        }
+        
+        .mobile-overlay.active {
+            opacity: 1;
+        }
+        
+        .filter-toggle:hover {
+            background: #3a7bc8;
+        }
+        
+        .filter-toggle::after {
+            content: '▼';
+            position: absolute;
+            right: 20px;
+            transition: transform 0.3s;
+        }
+        
+        .filter-toggle.active::after {
+            transform: rotate(180deg);
+        }
+        
+        .filter-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+        
+        .filter-list {
+            list-style: none;
+        }
+        
+        .filter-item {
+            margin-bottom: 8px;
+        }
+        
+        .filter-link {
+            display: block;
+            padding: 8px 12px;
+            color: var(--text-light);
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+        
+        .filter-link:hover {
+            background: #fff;
+            color: var(--accent-orange);
+        }
+        
+        .filter-link.active {
+            background: var(--accent-orange);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .filter-count {
+            float: right;
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        
+        h1 {
+            font-size: 32px;
+            margin-bottom: 5px;
+            color: var(--text-dark);
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: var(--accent-orange);
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+        }
+        
+        .post {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-left: 4px solid var(--accent-orange);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .post:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(204, 120, 92, 0.15);
+        }
+        
+        .post:last-child {
+            margin-bottom: 0;
+        }
+        
+        .post-date {
+            color: var(--accent-orange);
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+        
+        .post-content {
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .post-content a {
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+        
+        .post-content a:hover {
+            border-bottom-color: var(--primary-blue);
+        }
+        
+        .post-image {
+            max-width: 100%;
+            height: auto;
+            margin-top: 10px;
+            border-radius: 4px;
+        }
+        
+        .error {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            border-radius: 4px;
+            color: #856404;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .header {
+                margin-bottom: 20px;
+            }
+            
+            .content-wrapper {
+                flex-direction: column;
+            }
+            
+            .hamburger-menu {
+                display: flex;
+            }
+            
+            .mobile-overlay {
+                display: block;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 998;
+                opacity: 0;
+                transition: opacity 0.3s;
+            }
+            
+            .mobile-overlay.active {
+                opacity: 1;
+            }
+            
+            .sidebar {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 280px;
+                height: 100vh;
+                background: white;
+                z-index: 999;
+                padding: 80px 20px 20px 20px;
+                overflow-y: auto;
+                transition: right 0.3s ease;
+                box-shadow: -4px 0 12px rgba(0,0,0,0.1);
+            }
+            
+            .sidebar.active {
+                right: 0;
+            }
+            
+            .links-section,
+            .filter-section {
+                position: static;
+                max-height: none;
+                opacity: 1;
+                padding: 20px;
+                margin-bottom: 16px;
+            }
+            
+            .links-section {
+                border-top: 3px solid var(--accent-orange);
+            }
+            
+            .filter-section {
+                border-top: 3px solid var(--primary-blue);
+            }
+            
+            .filter-list {
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .main-content {
+                width: 100%;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="hamburger-menu" id="hamburger-menu">
+            <i class="fas fa-bars" id="menu-icon"></i>
+        </button>
+        
+        <div class="mobile-overlay" id="mobile-overlay"></div>
+        
+        <header class="header">
+            <h1>Twintigste Eeuw</h1>
+            <p class="subtitle">Shownotes</p>
+        </header>
+        
+        <div class="content-wrapper">
+            <aside class="sidebar" id="sidebar">
+                <div class="links-section">
+                    <div class="section-title">Links</div>
+                    <ul class="links-list">
+                        <li class="link-item">
+                            <a href="https://blackboard.nhlstenden.com/ultra/courses/_35852_1/outline" target="_blank" class="external-link">BlackBoard</a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="filter-section" id="filter-section">
+                    <div class="section-title">Filter</div>
+                    <ul class="filter-list" id="filter-list">
+                        <li class="filter-item">
+                            <a href="#" class="filter-link active" data-tag="all">Alles</a>
+                        </li>
+                    </ul>
+                </div>
+            </aside>
+            
+            <main class="main-content">
+                <div id="feed-container">
+                    <div class="loading">Updates laden...</div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const BLUESKY_HANDLE = 'twintigste.bsky.social';
+        const RSS_URL = `https://bsky.app/profile/${BLUESKY_HANDLE}/rss`;
+        
+        let allPosts = [];
+        let currentFilter = 'all';
+        
+        function extractHashtags(text) {
+            const hashtagRegex = /#[\wÀ-ÿ]+/g;
+            return text.match(hashtagRegex) || [];
+        }
+        
+        function renderPosts(posts, filterTag = 'all') {
+            const container = document.getElementById('feed-container');
+            
+            let filteredPosts = posts;
+            if (filterTag !== 'all') {
+                filteredPosts = posts.filter(post => {
+                    const content = post.description || post.content || '';
+                    const hashtags = extractHashtags(content);
+                    return hashtags.some(tag => tag.toLowerCase() === filterTag.toLowerCase());
+                });
+            }
+            
+            if (filteredPosts.length === 0) {
+                container.innerHTML = '<p class="loading">Geen posts gevonden met deze filter.</p>';
+                return;
+            }
+            
+            let html = '';
+            filteredPosts.forEach(item => {
+                const date = new Date(item.pubDate);
+                // Handmatige correctie voor Nederlandse tijd
+                date.setHours(date.getHours() + 1);
+                const formattedDate = date.toLocaleString('nl-NL', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                // Maak links klikbaar in de content
+                let content = item.description || item.content || '';
+                content = content.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>');
+                
+                html += `
+                    <div class="post">
+                        <div class="post-date">${formattedDate}</div>
+                        <div class="post-content">${content}</div>
+                        ${item.enclosure?.link ? `<img src="${item.enclosure.link}" alt="Post afbeelding" class="post-image">` : ''}
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function buildFilterList(posts) {
+            const hashtagCounts = {};
+            
+            posts.forEach(post => {
+                const content = post.description || post.content || '';
+                const hashtags = extractHashtags(content);
+                hashtags.forEach(tag => {
+                    const normalizedTag = tag.toLowerCase();
+                    hashtagCounts[normalizedTag] = (hashtagCounts[normalizedTag] || 0) + 1;
+                });
+            });
+            
+            const filterList = document.getElementById('filter-list');
+            const sortedHashtags = Object.entries(hashtagCounts)
+                .sort((a, b) => b[1] - a[1]); // Sorteer op aantal
+            
+            // Voeg hashtag filters toe
+            sortedHashtags.forEach(([tag, count]) => {
+                const li = document.createElement('li');
+                li.className = 'filter-item';
+                li.innerHTML = `
+                    <a href="#" class="filter-link" data-tag="${tag}">
+                        ${tag} <span class="filter-count">${count}</span>
+                    </a>
+                `;
+                filterList.appendChild(li);
+            });
+            
+            // Add click handlers
+            document.querySelectorAll('.filter-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const tag = e.currentTarget.getAttribute('data-tag');
+                    
+                    // Update active state
+                    document.querySelectorAll('.filter-link').forEach(l => l.classList.remove('active'));
+                    e.currentTarget.classList.add('active');
+                    
+                    // Filter posts
+                    currentFilter = tag;
+                    renderPosts(allPosts, tag);
+                    
+                    // Close hamburger menu op mobiel
+                    if (window.innerWidth <= 768) {
+                        const hamburgerMenu = document.getElementById('hamburger-menu');
+                        const sidebar = document.getElementById('sidebar');
+                        const mobileOverlay = document.getElementById('mobile-overlay');
+                        
+                        hamburgerMenu.classList.remove('active');
+                        sidebar.classList.remove('active');
+                        mobileOverlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                });
+            });
+        }
+        
+        async function loadFeed() {
+            const container = document.getElementById('feed-container');
+            
+            try {
+                const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_URL)}`);
+                const data = await response.json();
+                
+                if (data.status !== 'ok') {
+                    throw new Error('Kon feed niet laden');
+                }
+                
+                if (data.items.length === 0) {
+                    container.innerHTML = '<p class="loading">Nog geen updates geplaatst.</p>';
+                    return;
+                }
+                
+                allPosts = data.items;
+                buildFilterList(allPosts);
+                renderPosts(allPosts, currentFilter);
+                
+            } catch (error) {
+                console.error('Fout bij laden feed:', error);
+                container.innerHTML = `
+                    <div class="error">
+                        <strong>Fout bij laden van updates</strong><br>
+                        Probeer de pagina te vernieuwen. Als het probleem blijft bestaan, neem contact op met de docent.
+                    </div>
+                `;
+            }
+        }
+        
+        // Laad feed bij pagina load
+        loadFeed();
+        
+        // Hamburger menu functionaliteit
+        const hamburgerMenu = document.getElementById('hamburger-menu');
+        const menuIcon = document.getElementById('menu-icon');
+        const sidebar = document.getElementById('sidebar');
+        const mobileOverlay = document.getElementById('mobile-overlay');
+        
+        function toggleMenu() {
+            hamburgerMenu.classList.toggle('active');
+            sidebar.classList.toggle('active');
+            mobileOverlay.classList.toggle('active');
+            
+            // Toggle icon between bars and times
+            if (hamburgerMenu.classList.contains('active')) {
+                menuIcon.classList.remove('fa-bars');
+                menuIcon.classList.add('fa-times');
+            } else {
+                menuIcon.classList.remove('fa-times');
+                menuIcon.classList.add('fa-bars');
+            }
+            
+            // Prevent body scroll when menu is open
+            if (sidebar.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+        
+        function closeMenu() {
+            hamburgerMenu.classList.remove('active');
+            sidebar.classList.remove('active');
+            mobileOverlay.classList.remove('active');
+            menuIcon.classList.remove('fa-times');
+            menuIcon.classList.add('fa-bars');
+            document.body.style.overflow = '';
+        }
+        
+        hamburgerMenu.addEventListener('click', toggleMenu);
+        mobileOverlay.addEventListener('click', closeMenu);
+        
+        // Refresh elke 5 minuten (optioneel)
+        setInterval(loadFeed, 5 * 60 * 1000);
+    </script>
+</body>
+</html>
