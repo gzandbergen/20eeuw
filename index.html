@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Twintigste Eeuw</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -151,7 +150,9 @@
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 22px;
+            font-size: 28px;
+            font-weight: 300;
+            line-height: 1;
         }
         
         .hamburger-menu:hover {
@@ -160,12 +161,8 @@
             box-shadow: 0 6px 16px rgba(204, 120, 92, 0.5);
         }
         
-        .hamburger-menu i {
-            transition: transform 0.3s;
-        }
-        
-        .hamburger-menu.active i {
-            transform: rotate(90deg);
+        .hamburger-menu .menu-icon {
+            transition: opacity 0.2s;
         }
         
         .mobile-overlay {
@@ -403,7 +400,7 @@
 <body>
     <div class="container">
         <button class="hamburger-menu" id="hamburger-menu">
-            <i class="fas fa-bars" id="menu-icon"></i>
+            <span class="menu-icon" id="menu-icon">☰</span>
         </button>
         
         <div class="mobile-overlay" id="mobile-overlay"></div>
@@ -563,14 +560,7 @@
                     
                     // Close hamburger menu op mobiel
                     if (window.innerWidth <= 768) {
-                        const hamburgerMenu = document.getElementById('hamburger-menu');
-                        const sidebar = document.getElementById('sidebar');
-                        const mobileOverlay = document.getElementById('mobile-overlay');
-                        
-                        hamburgerMenu.classList.remove('active');
-                        sidebar.classList.remove('active');
-                        mobileOverlay.classList.remove('active');
-                        document.body.style.overflow = '';
+                        closeMenu();
                     }
                 });
             });
@@ -655,13 +645,11 @@
             sidebar.classList.toggle('active');
             mobileOverlay.classList.toggle('active');
             
-            // Toggle icon between bars and times
+            // Toggle icon between hamburger and close
             if (hamburgerMenu.classList.contains('active')) {
-                menuIcon.classList.remove('fa-bars');
-                menuIcon.classList.add('fa-times');
+                menuIcon.textContent = '✕';
             } else {
-                menuIcon.classList.remove('fa-times');
-                menuIcon.classList.add('fa-bars');
+                menuIcon.textContent = '☰';
             }
             
             // Prevent body scroll when menu is open
@@ -676,8 +664,7 @@
             hamburgerMenu.classList.remove('active');
             sidebar.classList.remove('active');
             mobileOverlay.classList.remove('active');
-            menuIcon.classList.remove('fa-times');
-            menuIcon.classList.add('fa-bars');
+            menuIcon.textContent = '☰';
             document.body.style.overflow = '';
         }
         
