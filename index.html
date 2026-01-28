@@ -453,6 +453,26 @@
             return text.match(hashtagRegex) || [];
         }
         
+        function parseRSSItem(item) {
+            const title = item.querySelector('title')?.textContent || '';
+            const description = item.querySelector('description')?.textContent || '';
+            const pubDate = item.querySelector('pubDate')?.textContent || '';
+            const link = item.querySelector('link')?.textContent || '';
+            
+            // Check for image enclosure
+            const enclosure = item.querySelector('enclosure');
+            const imageUrl = enclosure?.getAttribute('url') || null;
+            
+            return {
+                title,
+                description,
+                content: description,
+                pubDate,
+                link,
+                enclosure: imageUrl ? { link: imageUrl } : null
+            };
+        }
+        
         function renderPosts(posts, filterTag = 'all') {
             const container = document.getElementById('feed-container');
             
@@ -473,14 +493,13 @@
             let html = '';
             filteredPosts.forEach(item => {
                 const date = new Date(item.pubDate);
-                // Handmatige correctie voor Nederlandse tijd
-                date.setHours(date.getHours() + 1);
                 const formattedDate = date.toLocaleString('nl-NL', {
                     day: 'numeric',
                     month: 'long',
                     year: 'numeric',
                     hour: '2-digit',
-                    minute: '2-digit'
+                    minute: '2-digit',
+                    timeZone: 'Europe/Amsterdam'
                 });
                 
                 // Maak links klikbaar in de content
@@ -560,19 +579,52 @@
             const container = document.getElementById('feed-container');
             
             try {
-                const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_URL)}`);
-                const data = await response.json();
+                console.log('Fetching RSS feed...');
                 
-                if (data.status !== 'ok') {
-                    throw new Error('Kon feed niet laden');
+                // Use allOrigins to bypass CORS and get fresh RSS without cache
+                const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(RSS_URL)}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
-                if (data.items.length === 0) {
+                const xmlText = await response.text();
+                console.log('RSS fetched, parsing XML...');
+                
+                // Parse XML
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+                
+                // Check for parsing errors
+                const parserError = xmlDoc.querySelector('parsererror');
+                if (parserError) {
+                    console.error('XML parsing error:', parserError.textContent);
+                    throw new Error('XML parsing error');
+                }
+                
+                // Get all items from RSS
+                const items = xmlDoc.querySelectorAll('item');
+                console.log(`Found ${items.length} items`);
+                
+                if (items.length === 0) {
                     container.innerHTML = '<p class="loading">Nog geen updates geplaatst.</p>';
                     return;
                 }
                 
-                allPosts = data.items;
+                // Parse items
+                const parsedItems = Array.from(items).map(parseRSSItem);
+                console.log('Parsed items:', parsedItems);
+                
+                allPosts = parsedItems;
+                
+                // Clear existing filters except "Alles"
+                const filterList = document.getElementById('filter-list');
+                filterList.innerHTML = `
+                    <li class="filter-item">
+                        <a href="#" class="filter-link active" data-tag="all">Alles</a>
+                    </li>
+                `;
+                
                 buildFilterList(allPosts);
                 renderPosts(allPosts, currentFilter);
                 
@@ -581,6 +633,7 @@
                 container.innerHTML = `
                     <div class="error">
                         <strong>Fout bij laden van updates</strong><br>
+                        ${error.message}<br>
                         Probeer de pagina te vernieuwen. Als het probleem blijft bestaan, neem contact op met de docent.
                     </div>
                 `;
