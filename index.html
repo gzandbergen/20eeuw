@@ -451,26 +451,6 @@
             return text.match(hashtagRegex) || [];
         }
         
-        function parseRSSItem(item) {
-            const title = item.querySelector('title')?.textContent || '';
-            const description = item.querySelector('description')?.textContent || '';
-            const pubDate = item.querySelector('pubDate')?.textContent || '';
-            const link = item.querySelector('link')?.textContent || '';
-            
-            // Check for image enclosure
-            const enclosure = item.querySelector('enclosure');
-            const imageUrl = enclosure?.getAttribute('url') || null;
-            
-            return {
-                title,
-                description,
-                content: description,
-                pubDate,
-                link,
-                enclosure: imageUrl ? { link: imageUrl } : null
-            };
-        }
-        
         function renderPosts(posts, filterTag = 'all') {
             const container = document.getElementById('feed-container');
             
@@ -572,41 +552,28 @@
             try {
                 console.log('Fetching RSS feed...');
                 
-                // Use allOrigins to bypass CORS and get fresh RSS without cache
-                const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(RSS_URL)}`);
+                // Use rss2json API (has caching but works with GitHub Pages)
+                const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_URL)}`);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
-                const xmlText = await response.text();
-                console.log('RSS fetched, parsing XML...');
+                const data = await response.json();
+                console.log('RSS fetched, status:', data.status);
                 
-                // Parse XML
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
-                
-                // Check for parsing errors
-                const parserError = xmlDoc.querySelector('parsererror');
-                if (parserError) {
-                    console.error('XML parsing error:', parserError.textContent);
-                    throw new Error('XML parsing error');
+                if (data.status !== 'ok') {
+                    throw new Error('Kon feed niet laden');
                 }
                 
-                // Get all items from RSS
-                const items = xmlDoc.querySelectorAll('item');
-                console.log(`Found ${items.length} items`);
-                
-                if (items.length === 0) {
+                if (data.items.length === 0) {
                     container.innerHTML = '<p class="loading">Nog geen updates geplaatst.</p>';
                     return;
                 }
                 
-                // Parse items
-                const parsedItems = Array.from(items).map(parseRSSItem);
-                console.log('Parsed items:', parsedItems);
+                console.log(`Found ${data.items.length} items`);
                 
-                allPosts = parsedItems;
+                allPosts = data.items;
                 
                 // Clear existing filters except "Alles"
                 const filterList = document.getElementById('filter-list');
